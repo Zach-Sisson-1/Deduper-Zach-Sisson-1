@@ -6,9 +6,7 @@ ____
 
 ## Algorithm Steps:
 
-Open and Read in set of Umi's as a sorted list (Umi_list)
-
-Initiliaze Umi Dictionary where keys = unique Umi, and values = another empty dictionary ##See Functions
+Given UMI file, initiliaze Umi Dictionary where keys are unique Umis, and values are another empty dictionary ##See Functions
 
 Open Output file
 
@@ -54,7 +52,7 @@ Close file
 ***
 ## Functions
 
-def Position_correcter(position,cigar) -> int:
+def Position_corrector(position,cigar) -> int:
 
 ```Function inputs a start position integer and cigar string from a SAM file and outputs a position that is corrected for any softclipping that occured.```
 
