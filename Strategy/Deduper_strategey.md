@@ -8,35 +8,43 @@ ____
 
 Open and Read in set of Umi's as a sorted list (Umi_list)
 
-Sort the SAM file via QName (check if this will push headers down below, if so, change sort method)
+Initiliaze Umi Dictionary where keys = unique Umi, and values = another empty dictionary 
 
-Readlines(), outputting directly to file until start of line != '@'
+Open Output file
+Open Input SAM file
 
-Read in first SAM entry:
-	
-	{Reference_Dict} = {'QNAME': val; 'FLAG': val, 'RNAME':val, POS: val, etc}   #where 'val' is corresponding info from first entry
+Perform the following loop on SAM file:
+	For line in file:
+		Read in the next line
 
-	Check if Umi in Qname is in Umi_list by looking at last 8 char of Qname     
-		if yes: do nothing
-		if no: grab nextline entry and use as reference instead (repeat check until first entry contains a Qname with an UMI that is in the given list)
-
-
-4) Perform the following loop on SAM file:
-	
-		if readline() exists:             
-				Test = readline()           
-				Test_Dict = {'QNAME': val; 'FLAG': val, 'RNAME':val, POS: val, etc}, where val are the values extracted from this entry 
-				
-				Duplicate_test({Reference_Dict},{Test_Dict})    ##Compare Dictionary values, see functions
-					If output == True:        ##meaning duplicate
-						pass
-					If output == False:      ##meaning not a duplicate
-						Reference_Dict >> 'output SAM'   ##print SAM entry dictionary values to output file
-						Reference_Dict == Test_Dict    ##Set Ref dict values to be equal to the new (unique) entry 
+		If line starts with '@', print line directly to output, as its part of the header and restart the loop
 		
-		else:                                          ##If this is the final line in SAM file
-				Reference_Dict >> 'output SAM'        ##print SAM entry dictionary values to output file as Reference_Dict can't be a duplicate
+		break up the line into variables UMI, Position, Flag, Rname, Cigar, etc, extracting components	
+	
+		
+		Test whether or not UMI barcode is in the keys of UMI_dicionary, if so continue, else stop and restart loop (throw away entry)
+		
+		Correct the position value, accounting for any softclipping   #See functions, returns an integer
+		Extract strand identity from bitflag                            ##See functions, returns integer value 0-1	
+		
 
+		Try calling the corrected position as a key in the UMI sub dictionary:
+		
+			If result == True:        ##Position was already seen, we will need to consider duplicate
+				Search for the tuple (Rname, strand) within the UMI subdictionary, calling the position as the key.
+				
+				If results == True:    ## This must be a duplicate, throw out
+					do nothing, restart loop        
+				else:                   ##Not a duplicate, print and update
+					Add the tuple of (Rname, strand) as a value of the Position key within the UMI subdirectory.
+					Print entry to output file
+
+			
+			else:                      ##Position was not seen before, and therefore cannot be a duplicate
+				assign entry variables Position, Rname, and Strand to UMI dictionary, adding to the subdictionaries for this given UMI where the corrected position value is the key, and the subvalue is a tuple in the form (Rname, strand). So the structure will be a dicionary (UMIS) of dictionaries (Positions) of tuples (Rname, strand).
+
+				Print entry line to output file
+		
 5) Close file
 
 ## Output = Inputted SAM file, with only 1 copy of each PCR duplicate
@@ -44,61 +52,6 @@ Read in first SAM entry:
 ***
 ## Functions
 
-def Duplicate_test(Ref_dict, Test_dict) -> boolean:
-
-```Function will take two dictionaries as arugments, corresponding to SAM entries and determine if the two SAM entries are PCR duplicates. Function will stop and return FALSE whenever a condition is not met.```
-	
-	##First checks umi dissimilarity: 
-	Ref_Umi = Last 8 characters of Qname in Ref_dict
-	Test_Umi = Last 8 charactrs of Qname in Test_dict
-
-	If Test_Umi not in Umi_list:
-		Return True                 ##Treats this as a duplicate to be thrown away, as the Umi is not in the source list              
-	elif Test_Umi != Ref_Umi:        ##Can't be a duplicate
-		Return False
-	
-	else:    ###Next checks chromosome number (Rname)
-		Ref_chrom = 'Rname' from Reference_Dict
-		Test_chrom = 'Rname' from Test_Dict
-		if Test_chrom != Ref_chrom:       ##Then it can't be a duplicate
-			Return False
-		
-		else:  ###Next checks strand
-			Ref_strand = Strand_reader(Ref[FLAG])    ##See functions, will return either 'forward', or 'reverse' given bitflag 
-			Test_strand = Strand_reader(Test[FLAG])  
-			if Test_strand != Ref_strand:     ##Then it can't be a duplicate
-				Return False
-		
-			else:   ###Next checks position, and accounts for softclipping 
-			Ref_position = Position_correcter(Ref[position],Ref[Cigar])    ##See functions, will return an integer position 
-			Test_position = Position_corrector(Test[position],Test[Cigar])
-			if Test_position != Ref_position:          ##Then it can't be a duplicate
-				Return False
-			else:                   ###All conditions have been met for the entry to be a PCR duplicate
-				Return True
-
-
-Input:{'Qname': 'NS500451:154:HWKTMBGXX:1:11101:24260:1121:CTGTTCAC', 'FLAG': 0, 'RNAME': 11, 'POS': 10, 'CIGAR':64M},{'Qname': 'NS500451:154:HWKTMBGXX:1:11101:24260:1121:CTGTTCAC', 'FLAG': 0, 'RNAME': 11, 'POS': 10, 'CIGAR':64M}
-
-Expected Output: True    ##True duplicate     
-
-Input:{'Qname': 'NS500451:154:HWKTMBGXX:1:11101:24260:1121:CTGTTCAC', 'FLAG': 0, 'RNAME': 11, 'POS': 15, 'CIGAR':64M},{'Qname': 'NS500451:154:HWKTMBGXX:1:11101:24260:1121:CTGTTCAC', 'FLAG': 0, 'RNAME': 11, 'POS': 10, 'CIGAR':64M}
-
-Expected Output: False    ##Different Position
-
-Input:{'Qname': 'NS500451:154:HWKTMBGXX:1:11101:24260:1121:CTGTTCAC', 'FLAG': 0, 'RNAME': 13, 'POS': 10, 'CIGAR':64M},{'Qname': 'NS500451:154:HWKTMBGXX:1:11101:24260:1121:CTGTTCAC', 'FLAG': 0, 'RNAME': 11, 'POS': 10, 'CIGAR':64M}
-
-Expected Output: False    ##Different Chromosome
-
-Input:{'Qname': 'NS500451:154:HWKTMBGXX:1:11101:24260:1121:CAGGGCTC', 'FLAG': 0, 'RNAME': 11, 'POS': 10, 'CIGAR':64M},{'Qname': 'NS500451:154:HWKTMBGXX:1:11101:24260:1121:CTGTTCAC', 'FLAG': 0, 'RNAME': 11, 'POS': 10, 'CIGAR':64M}
-
-Expected Output: False  ##Different UMI
-
-Input:{'Qname': 'NS500451:154:HWKTMBGXX:1:11101:24260:1121:CTGTTCAC', 'FLAG': 0, 'RNAME': 11, 'POS': 10, 'CIGAR':64M},{'Qname': 'NS500451:154:HWKTMBGXX:1:11101:24260:1121:CTGTTCAC', 'FLAG': 16, 'RNAME': 11, 'POS': 10, 'CIGAR':64M}
-
-Expected Output: False  ##Different Strand
-
-***
 def Position_correcter(position,cigar) -> int:
 
 ```Function inputs a start position integer and cigar string from a SAM file and outputs a position that is corrected for any softclipping that occured.```
@@ -125,14 +78,14 @@ Input: 13,'64M'
 
 Expected Output: 13
 ***
-def Strand_reader(bitflag) -> string:
+def Strand_reader(bitflag) -> int:
 
-```Function inputs a Bitflag from a SAM file and outputs either 'forward' or 'reverse', depending on the which strand the sequence was aligned to.```
+```Function inputs a Bitflag from a SAM file and outputs either 1 or '0, depending on the which strand the sequence was aligned to. 0=forward, 1=reverse```
 
-	if ((bitflag & 16) == 16:  
-		return('reverse')
+	if ((bitflag & 16) == 16:   ##Indicating a map to the reverse strand
+		return(1)       
 	else:                  ##Assumes SAM file only contains mapped reads, i.e 'segment unmapped' flag can not be true or else this will break. 
-		return('forward')
+		return(0)
 
 Input: 16
 
@@ -145,7 +98,6 @@ Expected Output: 'forward'
 ***
 Key considerations:
 - Throws away entries with Unmatching Umi's (treats them as duplicates) 
-- Are Qnames always equal between duplicates? (does not account for that if answer = true )
 - Assumes SAM file only contains mapped reads, i.e 'segment unmapped' flag not present in any entry's bitflag. 
-- Do I need to account for specifics of the cigar string other than the info relevant for soft clipping? Only starting position should matter..?
-- does softclipping remove at most 3 nt?
+- Function accounts only for softclipping up to 9 nucleotides per sequence
+- Algorithm search speed may be improved by switching order of Position and Chromosome search first. Positon search would yield fewer initial matches (faster for the dictionary tree search) but also requires a postion_correction function to be called at every entry. Will need to consider rearranging order of search. 
