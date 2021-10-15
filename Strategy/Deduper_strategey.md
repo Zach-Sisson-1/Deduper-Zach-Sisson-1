@@ -8,24 +8,26 @@ ____
 
 Open and Read in set of Umi's as a sorted list (Umi_list)
 
-Initiliaze Umi Dictionary where keys = unique Umi, and values = another empty dictionary 
+Initiliaze Umi Dictionary where keys = unique Umi, and values = another empty dictionary ##See Functions
 
 Open Output file
+
 Open Input SAM file
 
 Perform the following loop on SAM file:
+	
 	For line in file:
 		Read in the next line
 
 		If line starts with '@', print line directly to output, as its part of the header and restart the loop
 		
-		break up the line into variables UMI, Position, Flag, Rname, Cigar, etc, extracting components	
+		next, break up the line into variables UMI, Position, Flag, Rname, Cigar, etc, extracting components	
 	
 		
-		Test whether or not UMI barcode is in the keys of UMI_dicionary, if so continue, else stop and restart loop (throw away entry)
+		First, test whether or not UMI barcode is in the keys of UMI_dicionary, if so continue, else stop and restart loop (throw away entry)
 		
-		Correct the position value, accounting for any softclipping   #See functions, returns an integer
-		Extract strand identity from bitflag                            ##See functions, returns integer value 0-1	
+		 Correct the position value, accounting for any softclipping   #See functions, returns an integer
+		 Extract strand identity from bitflag                            ##See functions, returns integer value 0-1	
 		
 
 		Try calling the corrected position as a key in the UMI sub dictionary:
@@ -45,9 +47,9 @@ Perform the following loop on SAM file:
 
 				Print entry line to output file
 		
-5) Close file
+Close file
 
-## Output = Inputted SAM file, with only 1 copy of each PCR duplicate
+### Output = Inputted SAM file, with only 1 copy of each PCR duplicate
 
 ***
 ## Functions
@@ -80,7 +82,7 @@ Expected Output: 13
 ***
 def Strand_reader(bitflag) -> int:
 
-```Function inputs a Bitflag from a SAM file and outputs either 1 or '0, depending on the which strand the sequence was aligned to. 0=forward, 1=reverse```
+```Function inputs a Bitflag from a SAM file and outputs either 0 or 1, depending on the which strand the sequence was aligned to. 0=forward, 1=reverse```
 
 	if ((bitflag & 16) == 16:   ##Indicating a map to the reverse strand
 		return(1)       
@@ -96,7 +98,22 @@ Input: 0
 Expected Output: 'forward' 
 
 ***
-Key considerations:
+def Umi_Init(file) -> int:
+
+```Function inputs a file containing a list of UMIs and outputs an Dictionary where the keys are the UMIS, and the values are empty dicionaries```
+
+	open file
+	UMI_dict = {}
+	for line in file:
+		ssign line contents as key in UMI_dict, with value ={}
+	return(UMI_Dict)
+
+Input file: 'Example_UMI_list.txt'
+
+Expected Output: {AACGCCAT: {}, ACACTCAG: {}, ACTGTGAC: {}, etc....}
+
+***
+Overall considerations:
 - Throws away entries with Unmatching Umi's (treats them as duplicates) 
 - Assumes SAM file only contains mapped reads, i.e 'segment unmapped' flag not present in any entry's bitflag. 
 - Function accounts only for softclipping up to 9 nucleotides per sequence
