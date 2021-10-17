@@ -113,6 +113,7 @@ Expected Output: {AACGCCAT: {}, ACACTCAG: {}, ACTGTGAC: {}, etc....}
 ***
 Overall considerations:
 - Throws away entries with Unmatching Umi's (treats them as duplicates) 
-- Assumes SAM file only contains mapped reads, i.e 'segment unmapped' flag not present in any entry's bitflag. 
+- Assumes SAM file only contains mapped reads, i.e 'segment unmapped' flag not present in any entry's bitflag. Will need to add further flexibility
 - Function accounts only for softclipping up to 9 nucleotides per sequence
 - Algorithm search speed may be improved by switching order of Position and Chromosome search first. Positon search would yield fewer initial matches (faster for the dictionary tree search) but also requires a postion_correction function to be called at every entry. Will need to consider rearranging order of search. 
+- Is there a 'best' duplicate to keep? i.e one that has fewest indels or clipping etc. Also is it worth keeping a record of which sequences were duplicated, and how many times, as another file perhaps?
