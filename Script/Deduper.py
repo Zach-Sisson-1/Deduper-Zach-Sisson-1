@@ -6,10 +6,10 @@ import argparse
 
 
 def get_args():
-	parser = argparse.ArgumentParser(description="A script to deduplex SAM files i.e remove duplicated PCR samples. Inputs include SAM file, an optional list of Unique Molecular Indexes (UMI's) used, ")
+	parser = argparse.ArgumentParser(description="A script designed to remove PCR duplicates from a SAM file after alignment. If PCR duplicates are present in a SAM file, it can lead to bias in the analysis of differential expression. This script will retain only 1 copy of each PCR duplicate, retaining the first copy it encounters. Script can handle SAM file with Randomers and UMI's used.")
 	parser.add_argument("-u", "--umi_list", help = "An optional text file containing a list of Unique Molecular Indexes used", type=str, required=False, default='Random')
 	parser.add_argument("-out", "--output_file", help = "path for output file", type=str, required=True)
-	parser.add_argument("-sam", "--sam_file", help = "input SAM file", type=str, required=True)
+	parser.add_argument("-f", "--sam_file", help = "input SAM file", type=str, required=True)
 	return parser.parse_args()
 
 args = get_args()

@@ -9,16 +9,16 @@ path='/home/zsisson2/bgmp/bioinformatics/Fall_2021/Deduper/Strategy/Unit_tests/'
 cd /home/zsisson2/bgmp/bioinformatics/Fall_2021/Deduper/Script
 
 #Tests script for Randomers
-./Deduper.py -sam '/home/zsisson2/bgmp/bioinformatics/Fall_2021/Deduper/Strategy/Unit_tests/using_randomer.txt' -out '/home/zsisson2/bgmp/bioinformatics/Fall_2021/Deduper/Strategy/Unit_tests/using_randomer.txt.out'; 
+./Deduper.py -f '/home/zsisson2/bgmp/bioinformatics/Fall_2021/Deduper/Strategy/Unit_tests/using_randomer.txt' -out '/home/zsisson2/bgmp/bioinformatics/Fall_2021/Deduper/Strategy/Unit_tests/using_randomer.txt.out'; 
 
-if cmp -s "${path}using_randomers.txt.out" "${path}using_randomers.expected.txt"; then
+if cmp -s "${path}using_randomer.txt.out" "${path}using_randomer.expected.txt"; then
 	echo "The script succesfully deduped the 'Randomer' unit test"
 else 
 	echo "The script FAILED on the 'Randomer' unit test"
 fi
 
 #Tests script for given UMI list
-./Deduper.py -u '/home/zsisson2/bgmp/bioinformatics/Fall_2021/Deduper/Strategy/Unit_tests/Example_UMI_list.txt' -sam '/home/zsisson2/bgmp/bioinformatics/Fall_2021/Deduper/Strategy/Unit_tests/using_umi.txt' -out '/home/zsisson2/bgmp/bioinformatics/Fall_2021/Deduper/Strategy/Unit_tests/using_umi.txt.out';
+./Deduper.py -u '/home/zsisson2/bgmp/bioinformatics/Fall_2021/Deduper/Strategy/Unit_tests/Example_UMI_list.txt' -f '/home/zsisson2/bgmp/bioinformatics/Fall_2021/Deduper/Strategy/Unit_tests/using_umi.txt' -out '/home/zsisson2/bgmp/bioinformatics/Fall_2021/Deduper/Strategy/Unit_tests/using_umi.txt.out';
 
 if cmp -s "${path}using_umi.txt.out" "${path}using_umi.expected.txt"; then
 	echo "The script succesfully deduped the 'using_umi' unit test"
@@ -27,7 +27,7 @@ else
 fi
 
 #Tests script for differing only by position
-./Deduper.py -sam '/home/zsisson2/bgmp/bioinformatics/Fall_2021/Deduper/Strategy/Unit_tests/position_test.txt' -out '/home/zsisson2/bgmp/bioinformatics/Fall_2021/Deduper/Strategy/Unit_tests/position_test.txt.out' ;
+./Deduper.py -f '/home/zsisson2/bgmp/bioinformatics/Fall_2021/Deduper/Strategy/Unit_tests/position_test.txt' -out '/home/zsisson2/bgmp/bioinformatics/Fall_2021/Deduper/Strategy/Unit_tests/position_test.txt.out' ;
 
 if cmp -s "${path}position_test.txt.out" "${path}position_test.expected.txt"; then
 	echo "The script succesfully deduped the 'Position' unit test"
@@ -36,7 +36,7 @@ else
 fi
 
 #Tests script for differing only by chromsome 
-./Deduper.py -sam '/home/zsisson2/bgmp/bioinformatics/Fall_2021/Deduper/Strategy/Unit_tests/chromosome_test.txt' -out '/home/zsisson2/bgmp/bioinformatics/Fall_2021/Deduper/Strategy/Unit_tests/chromosome_test.txt.out' ;
+./Deduper.py -f '/home/zsisson2/bgmp/bioinformatics/Fall_2021/Deduper/Strategy/Unit_tests/chromosome_test.txt' -out '/home/zsisson2/bgmp/bioinformatics/Fall_2021/Deduper/Strategy/Unit_tests/chromosome_test.txt.out' ;
 
 if cmp -s "${path}chromosome_test.txt.out" "${path}chromosome_test.expected.txt"; then
 	echo "The script succesfully deduped the 'Chromosome' unit test"
@@ -45,7 +45,7 @@ else
 fi
 
 #Tests script for differing only by strand
-./Deduper.py -sam '/home/zsisson2/bgmp/bioinformatics/Fall_2021/Deduper/Strategy/Unit_tests/strand_test.txt' -out '/home/zsisson2/bgmp/bioinformatics/Fall_2021/Deduper/Strategy/Unit_tests/strand_test.txt.out' ;
+./Deduper.py -f '/home/zsisson2/bgmp/bioinformatics/Fall_2021/Deduper/Strategy/Unit_tests/strand_test.txt' -out '/home/zsisson2/bgmp/bioinformatics/Fall_2021/Deduper/Strategy/Unit_tests/strand_test.txt.out' ;
 
 if cmp -s "${path}strand_test.txt.out" "${path}strand_test.expected.txt"; then
 	echo "The script succesfully deduped the 'strand' unit test"
@@ -54,7 +54,7 @@ else
 fi
 
 #Tests script for no duplicates
-./Deduper.py -sam '/home/zsisson2/bgmp/bioinformatics/Fall_2021/Deduper/Strategy/Unit_tests/no_duplicates.txt' -out '/home/zsisson2/bgmp/bioinformatics/Fall_2021/Deduper/Strategy/Unit_tests/no_duplicates.txt.out' ;
+./Deduper.py -f '/home/zsisson2/bgmp/bioinformatics/Fall_2021/Deduper/Strategy/Unit_tests/no_duplicates.txt' -out '/home/zsisson2/bgmp/bioinformatics/Fall_2021/Deduper/Strategy/Unit_tests/no_duplicates.txt.out' ;
 
 if cmp -s "${path}no_duplicates.txt.out" "${path}no_duplicates.expected.txt"; then
 	echo "The script succesfully deduped the 'no_duplicates' unit test"
