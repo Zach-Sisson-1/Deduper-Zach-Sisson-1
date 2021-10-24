@@ -2,14 +2,6 @@
 
 import argparse
 
-# #unit tests for:
-# - paired end reads
-# - single end reads
-# - randomer vs umi
-# - soft clipping
-# - strand 
-# - quality preference save
-
 '''This script is designed to remove PCR duplicates from a SAM file after alignment. If PCR duplicates are present in a SAM file, it can lead to bias in the analysis of differential expression. This script will retain only 1 copy of each PCR duplicate, retaining the first copy it encounters.'''
 
 
@@ -53,12 +45,12 @@ def barcode_puller(Qname) -> str:
 
 #Script if given a list of Umi's:
 if args.umi_list != 'Random':
-		Umi_list = []
-		umi_length = 0
-		with open(args.umi_list, "r") as umi_file:
-			for line in umi_file:
-				Umi_list.append(line.strip('\n').upper())
-				umi_length = len(Umi_list[0])  #sets the variable for the length of umi used later for extraction of umi)
+	Umi_list = []
+	umi_length = 0
+	with open(args.umi_list, "r") as umi_file:
+		for line in umi_file:
+			Umi_list.append(line.strip('\n').upper())
+			umi_length = len(Umi_list[0])  #sets the variable for the length of umi used later for extraction of umi)
 
 	#Initililize Dictionary of Dictionaries for logging unique values seen
 	ref_dict = {}
