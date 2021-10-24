@@ -15,8 +15,6 @@ def get_args():
 
 args = get_args()
 
-#Functions used
-
 
 #Script if given a list of Umi's:
 if args.umi_list != 'Random':
