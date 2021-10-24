@@ -63,7 +63,7 @@ else
 fi
 
 #Tests script for all duplicates
-./Deduper.py -sam '/home/zsisson2/bgmp/bioinformatics/Fall_2021/Deduper/Strategy/Unit_tests/all_duplicates.txt' -out '/home/zsisson2/bgmp/bioinformatics/Fall_2021/Deduper/Strategy/Unit_tests/all_duplicates.txt.out' ;
+./Deduper.py -f '/home/zsisson2/bgmp/bioinformatics/Fall_2021/Deduper/Strategy/Unit_tests/all_duplicates.txt' -out '/home/zsisson2/bgmp/bioinformatics/Fall_2021/Deduper/Strategy/Unit_tests/all_duplicates.txt.out' ;
 
 if cmp -s "${path}all_duplicates.txt.out" "${path}all_duplicates.expected.txt"; then
 	echo "The script succesfully deduped the 'all_duplicates' unit test"

@@ -422,3 +422,32 @@ def Velvetparser(input_file:str, kmer_size:int):
             fto.write(str(key)+'\t'+str(value)+'\n')
 
     return
+
+def Position_corrector(position,cigar) -> int: #Function accounts for softcipping up to 99 nucleotides
+    '''Function takes a position and a cigar string, and determines if any soft clipping occured at the 
+		beginning of the sequence. If so, the function will return a corrected position, accounting for softclipping, 
+		and the original position if no soft clipping occured.'''
+    cigar_string = str(cigar)
+    position = int(position)
+    try: 
+        cigar_string[0:3].index('S')
+        clip_value = int(cigar_string[0:(cigar_string.index('S'))])
+    except: #no soft clipping at beginning, return original position.
+        clip_value = 0
+    return(int(position)-clip_value)
+
+
+def strand_reader(bitflag) -> int:
+	'''Function takes a bitflag from a SAM file as an input, and returns either 1 or 0, 
+	indicating the sequence mapped to either the forward or reverse strand. 0=forward, 1=reverse '''
+	if ((bitflag & 16) == 16): 
+		return(1)
+	else:			#Assumes SAM file only contains mapped reads, i.e 'segment unmapped' flag can not be true or else this will break.
+		return(0)
+
+def barcode_puller(Qname) -> str:
+	'''Function inputs a Qname from SAM file and outputs the sequence barcode'''
+	index = (Qname.rfind(":")+1) #finds starting position of randomer in string
+	return(str(Qname[index:]))
+
+    

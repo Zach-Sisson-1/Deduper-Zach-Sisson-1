@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import argparse
+import Bioinfo as bf
 
 '''This script is designed to remove PCR duplicates from a SAM file after alignment. If PCR duplicates are present in a SAM file, it can lead to bias in the analysis of differential expression. This script will retain only 1 copy of each PCR duplicate, retaining the first copy it encounters.'''
 
@@ -15,32 +16,6 @@ def get_args():
 args = get_args()
 
 #Functions used
-def Position_corrector(position,cigar) -> int: #Function accounts for softcipping up to 99 nucleotides
-    '''Function takes a position and a cigar string, and determines if any soft clipping occured at the 
-		beginning of the sequence. If so, the function will return a corrected position, accounting for softclipping, 
-		and the original position if no soft clipping occured.'''
-    cigar_string = str(cigar)
-    position = int(position)
-    try: 
-        cigar_string[0:3].index('S')
-        clip_value = int(cigar_string[0:(cigar_string.index('S'))])
-    except: #no soft clipping at beginning, return original position.
-        clip_value = 0
-    return(int(position)-clip_value)
-
-def strand_reader(bitflag) -> int:
-	'''Function takes a bitflag from a SAM file as an input, and returns either 1 or 0, 
-	indicating the sequence mapped to either the forward or reverse strand. 0=forward, 1=reverse '''
-	if ((bitflag & 16) == 16): 
-		return(1)
-	else:			#Assumes SAM file only contains mapped reads, i.e 'segment unmapped' flag can not be true or else this will break.
-		return(0)
-
-def barcode_puller(Qname) -> str:
-	'''Function inputs a Qname from SAM file and outputs the sequence barcode'''
-	index = (Qname.rfind(":")+1) #finds starting position of randomer in string
-	return(str(Qname[index:]))
-
 
 
 #Script if given a list of Umi's:
@@ -74,8 +49,8 @@ if args.umi_list != 'Random':
 				position = int(line_split[3])
 				cigar =  str(line_split[5])
 				bitflag = int(line_split[1])
-				strand = strand_reader(bitflag)
-				corrected_position = Position_corrector(position,cigar)
+				strand = bf.strand_reader(bitflag)
+				corrected_position = bf.Position_corrector(position,cigar)
 			
 				try:  #Checks if umi in in list
 					ref_dict[umi]
@@ -119,13 +94,13 @@ else:
 				#break up line into components
 				line_split = line.split('\t')
 				Qname = line_split[0]
-				barcode = barcode_puller(Qname)#pulls out the UMI from the Qname
+				barcode = bf.barcode_puller(Qname)#pulls out the UMI from the Qname
 				Chromosome = str(line_split[2])
 				position = int(line_split[3])
 				cigar =  str(line_split[5])
 				bitflag = int(line_split[1])
-				strand = strand_reader(bitflag)
-				corrected_position = Position_corrector(position,cigar)
+				strand = bf.strand_reader(bitflag)
+				corrected_position = bf.Position_corrector(position,cigar)
 			
 				try:  #Checks if barcode has been seen before
 					ref_dict[barcode]
