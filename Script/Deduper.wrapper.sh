@@ -8,8 +8,9 @@
 #SBATCH --output=Deduper.%J.OUT
 #SBATCH --error=Deduper.%j.err
 
-SAM_file='/home/zsisson2/bgmp/bioinformatics/Fall_2021/Deduper/test.sam'
-Umi_list='/home/zsisson2/bgmp/bioinformatics/Fall_2021/Deduper/STL96.txt'
-output_name="Test.deduped"
+SAM_file='/home/zsisson2/bgmp/bioinformatics/Fall_2021/Deduper-Zach-Sisson-1/C1_SE_uniqAlign.sam'
+Umi_list='/home/zsisson2/bgmp/bioinformatics/Fall_2021/Deduper-Zach-Sisson-1/STL96.txt'
+output_name="C1_SE_uniqAlign.deduped.sam"
 
-/usr/bin/time -v Deduper.py -umi $Umi_list -sam $SAM_file -out $output_name
+conda activate bgmp_py39
+/usr/bin/time -v ./Deduper.py -u $Umi_list -f $SAM_file -out $output_name
