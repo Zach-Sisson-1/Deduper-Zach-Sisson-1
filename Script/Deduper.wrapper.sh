@@ -8,9 +8,9 @@
 #SBATCH --output=Deduper.%J.OUT
 #SBATCH --error=Deduper.%j.err
 
-SAM_file='/home/zsisson2/bgmp/bioinformatics/Fall_2021/Deduper-Zach-Sisson-1/C1_SE_uniqAlign.sam'
+#SAM_file='/home/zsisson2/bgmp/bioinformatics/Fall_2021/Deduper-Zach-Sisson-1/C1_SE_uniqAlign.sorted.sam'
 Umi_list='/home/zsisson2/bgmp/bioinformatics/Fall_2021/Deduper-Zach-Sisson-1/STL96.txt'
 output_name="C1_SE_uniqAlign.deduped.sam"
 
 conda activate bgmp_py39
-/usr/bin/time -v ./Deduper.py -u $Umi_list -f $SAM_file -out $output_name
+/usr/bin/time -v ./Deduper.py -u $Umi_list -f '/home/zsisson2/bgmp/bioinformatics/Fall_2021/Deduper-Zach-Sisson-1/C1_SE_uniqAlign.sorted.sam' -out $output_name

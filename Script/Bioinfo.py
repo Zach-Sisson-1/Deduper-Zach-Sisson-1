@@ -423,23 +423,53 @@ def Velvetparser(input_file:str, kmer_size:int):
 
     return
 
-def Position_corrector(position,cigar) -> int: #Function accounts for softcipping up to 99 nucleotides
-    '''Function takes a position and a cigar string, and determines if any soft clipping occured at the 
-		beginning of the sequence. If so, the function will return a corrected position, accounting for softclipping, 
-		and the original position if no soft clipping occured.'''
+def Position_corrector(position,cigar,strand) -> int: #Function accounts for softcipping up to 99 nucleotides
+    '''Function takes a position, cigar string, and strand (0 or 1), determines if any soft clipping occured at the 
+        beginning of the sequence. If so, the function will return a corrected position, accounting for softclipping, 
+        and the original position if no soft clipping occured. If the strand is reverse (1) then the corrected position will account for that'''
     cigar_string = str(cigar)
     position = int(position)
-    try: 
-        cigar_string[0:3].index('S')
-        clip_value = int(cigar_string[0:(cigar_string.index('S'))])
-    except: #no soft clipping at beginning, return original position.
-        clip_value = 0
-    return(int(position)-clip_value)
+    strand = int(strand)
+    
+    if strand == 0: #Forward strand
+        try: 
+            cigar_string[0:3].index('S')
+            clip_value = int(cigar_string[0:(cigar_string.index('S'))])
+        except: #no soft clipping at beginning, return original position.
+            clip_value = 0
+        return(int(position)-clip_value)
+    
+    elif strand == 1: #Reverse Strand:
+        cigar_list = list(cigar_string)
+        working_total = ""
+        total_length= 0
+        for char in cigar_list:
+            if char.isdigit() == True: #must be a number
+                working_total += str(char)
+            elif char == 'I': #must be insertion, ignore these, don't count towards total
+                working_total = "" 
+            else: #char is not integer, or 'I' so it must be M,N,S,D,X, etc. Dump working to total_length and reset working
+                total_length += int(working_total)
+                working_total = ""
+
+        #Checks for subclipping at beginning
+        try: 
+            cigar[0:3].index('S')
+            left_clip_value = int(cigar_string[0:(cigar_string.index('S'))])
+        except: #no soft clipping at beginning, return original position.
+            left_clip_value = 0
+
+        #Length to add to position to correct
+        pos = int(total_length-left_clip_value)
+      
+        return(position+pos)  
+    else:
+        raise ValueError("Strand is not forward or reverse (1, or 0)")
 
 
 def strand_reader(bitflag) -> int:
 	'''Function takes a bitflag from a SAM file as an input, and returns either 1 or 0, 
-	indicating the sequence mapped to either the forward or reverse strand. 0=forward, 1=reverse '''
+	indicating the sequence mapped to either the reverse or forward strand. 0=forward, 1=reverse '''
 	if ((bitflag & 16) == 16): 
 		return(1)
 	else:			#Assumes SAM file only contains mapped reads, i.e 'segment unmapped' flag can not be true or else this will break.
